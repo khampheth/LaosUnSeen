@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="magin">20dp</dimen>
+    <dimen name="h2">18sp</dimen>
+    <dimen name="h1">10dp</dimen>
+</resources>
