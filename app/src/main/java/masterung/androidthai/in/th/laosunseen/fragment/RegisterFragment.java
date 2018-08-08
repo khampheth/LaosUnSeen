@@ -15,17 +15,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import masterung.androidthai.in.th.laosunseen.MainActivity;
 import masterung.androidthai.in.th.laosunseen.R;
+import masterung.androidthai.in.th.laosunseen.utility.MyAlert;
 
-public class RegisterFragment extends Fragment{
+public class RegisterFragment extends Fragment {
 
     //    Explicit
     private Uri uri;
     private ImageView imageView;
+    private boolean aBoolean = true;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -43,22 +46,52 @@ public class RegisterFragment extends Fragment{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_register,menu);
+        inflater.inflate(R.menu.menu_register, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.itemUpload) {
+            uploadProcess();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void uploadProcess() {
+
+        EditText nameEditText = getView().findViewById(R.id.edtName);
+        EditText emailEditText = getView().findViewById(R.id.edtEmail);
+        EditText passwordEditText = getView().findViewById(R.id.edtPassword);
+
+//        Get Value from Editext
+        String nameString = nameEditText.getText().toString().trim();
+        String emailString = emailEditText.getText().toString().trim();
+        String passwordSring = passwordEditText.getText().toString().trim();
+
+//        Check choose Photo
+        if (aBoolean) {         //check have photot
+//            Non choose Photo
+            MyAlert myAlert = new MyAlert(getActivity());
+            myAlert.normalDialog("Non choose Photo", "Please choose Photo");
+        } else if (nameString.isEmpty() || emailString.isEmpty() || passwordSring.isEmpty()) {         //check string emty is true when emty
+
+//            have space  show
+            MyAlert myAlert = new MyAlert(getActivity());
+            myAlert.normalDialog("Have Space", "Please Fill All Element");
+
+        } else {
+//             no Space mean all fill not emty
+
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode==getActivity().RESULT_OK) {
+        if (resultCode == getActivity().RESULT_OK) {
             uri = data.getData();
+            aBoolean = false;
             try {
 
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri));
@@ -69,7 +102,7 @@ public class RegisterFragment extends Fragment{
             }
 
         } else {
-            Toast.makeText(getActivity(), "Please choose photo",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Please choose photo", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -80,16 +113,16 @@ public class RegisterFragment extends Fragment{
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent,"Please choose App"),1);
+                startActivityForResult(Intent.createChooser(intent, "Please choose App"), 1);
             }
         });
     }
 
     private void createToolbar() {
         Toolbar toolbar = getView().findViewById(R.id.toolBarRegister);
-        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
-        ((MainActivity)getActivity()).getSupportActionBar().setTitle("Register");
-        ((MainActivity)getActivity()).getSupportActionBar().setSubtitle("Please chose all field");
+        ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Register");
+        ((MainActivity) getActivity()).getSupportActionBar().setSubtitle("Please chose all field");
         ((MainActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -104,7 +137,7 @@ public class RegisterFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_register,container,false);
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
         return view;
     }
 }
