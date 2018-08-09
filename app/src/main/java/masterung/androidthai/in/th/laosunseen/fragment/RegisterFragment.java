@@ -30,6 +30,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+
 import masterung.androidthai.in.th.laosunseen.MainActivity;
 import masterung.androidthai.in.th.laosunseen.R;
 import masterung.androidthai.in.th.laosunseen.utility.MyAlert;
@@ -101,7 +103,7 @@ public class RegisterFragment extends Fragment {
         } else {
 
 //            No Space
-         //   uploadPhotoToFirebase();
+            uploadPhotoToFirebase();
             createAuthentication();
 
         }
@@ -146,6 +148,7 @@ public class RegisterFragment extends Fragment {
                 Toast.makeText(getActivity(), "Success Upload Photo", Toast.LENGTH_SHORT).show();
 
                 filePathURLPhoto();
+                creatPost();
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -159,9 +162,39 @@ public class RegisterFragment extends Fragment {
 
     }   // uploadPhoto
 
-    private void filePathURLPhoto() {
+    private void creatPost() {
+
+        ArrayList<String> stringArrayList = new ArrayList<>();
+        stringArrayList.add("Hello");
+        myPostString =stringArrayList.toString();
+        Log.d("9Augv1", "mypost==>" + myPostString);
 
     }
+
+    private void filePathURLPhoto() {   //get path photo fron firebase
+        try {
+            Log.d("9Augv1", "pathURL --> start");
+            FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+            StorageReference storageReference = firebaseStorage.getReference();
+            final String[] urlStrings = new String[1];
+
+            storageReference.child("Avata").child(nameString).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    urlStrings[0] = uri.toString();
+                    pathURLString = urlStrings[0];
+                    Log.d("9Augv1", "pathURL ==>" + pathURLString);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("9Augv1", "e Error ==>" + e.toString());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }   //end find path
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
