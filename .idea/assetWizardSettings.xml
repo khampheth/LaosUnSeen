@@ -33,9 +33,7 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_action_logout" />
-                                      <entry key="theme" value="HOLO_DARK" />
-                                      <entry key="themeColor" value="e52810" />
+                                      <entry key="outputName" value="ic_action_sign_out_back" />
                                     </map>
                                   </option>
                                 </PersistentState>

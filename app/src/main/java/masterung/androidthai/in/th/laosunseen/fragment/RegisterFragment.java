@@ -1,5 +1,6 @@
 package masterung.androidthai.in.th.laosunseen.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 import masterung.androidthai.in.th.laosunseen.MainActivity;
 import masterung.androidthai.in.th.laosunseen.R;
 import masterung.androidthai.in.th.laosunseen.utility.MyAlert;
+import masterung.androidthai.in.th.laosunseen.utility.UserModel;
 
 public class RegisterFragment extends Fragment {
 
@@ -43,6 +47,7 @@ public class RegisterFragment extends Fragment {
     private ImageView imageView;
     private boolean aBoolean = true;
     private  String nameString,emailString,passwordString,uidString,pathURLString,myPostString;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -77,6 +82,11 @@ public class RegisterFragment extends Fragment {
     }
 
     private void uploadProcess() {
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setTitle("Uplaod Value Process");
+        progressDialog.setMessage("Please Wait Few Minus");
+        progressDialog.show();
 
         EditText nameEditText = getView().findViewById(R.id.edtName);
         EditText emailEditText = getView().findViewById(R.id.edtEmail);
@@ -128,6 +138,7 @@ public class RegisterFragment extends Fragment {
                             MyAlert myAlert = new MyAlert(getActivity());
                             myAlert.normalDialog("Cannot Register","Becuase "+task.getException().getMessage());
                             Log.wtf("8AugV2", "Messege =="+task.getException().getMessage());
+                            progressDialog.dismiss();
                         }
                     }
                 });
@@ -149,18 +160,42 @@ public class RegisterFragment extends Fragment {
 
                 filePathURLPhoto();
                 creatPost();
-
+                createDatabase();
+                progressDialog.dismiss();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getActivity(), "Cannot Upload Photo", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+
             }
         });
 
 
 
     }   // uploadPhoto
+
+    private void createDatabase() {  //database firebase
+
+        UserModel userModel = new UserModel(uidString,nameString,emailString,pathURLString,myPostString);
+
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference()
+                .child("User");
+        databaseReference.child(uidString).setValue(userModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getActivity(), "Register Success", Toast.LENGTH_LONG).show();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.contentMainFragment, new ServiceFragement())
+                        .commit();
+            }
+        });
+
+    }
 
     private void creatPost() {
 
